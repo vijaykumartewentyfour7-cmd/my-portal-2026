@@ -1,27 +1,50 @@
 const express = require('express');
 const app = express();
-const port = 3000;
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+const BOT1_TOKEN = 'REMOVED_TOKEN';
+const BOT2_TOKEN = 'REMOVED_TOKEN';
+const MY_CHAT_ID = 'YAHAN_APNI_CHAT_ID_LIKHEIN'; // Yahan apni Telegram Chat ID likhein
+
+async function sendTelegramMessage(token, text) {
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: MY_CHAT_ID,
+        text: text,
+        parse_mode: 'HTML'
+      })
+    });
+  } catch (err) {
+    console.error('Error sending message:', err);
+  }
+}
+
+// Website ka home page
 app.get('/', (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>My Mobile Web App</title>
-        <style>
-          body { font-family: sans-serif; text-align: center; padding: 50px; background-color: #121212; color: #ffffff; }
-          h1 { color: #4CAF50; }
-          p { font-size: 18px; }
-        </style>
-      </head>
-      <body>
-        <h1>Mobile Express Server Ready! 🎉</h1>
-        <p>Yeh website Termux se chal rahi hai.</p>
-      </body>
-    </html>
-  `);
+  res.send('Website Data Collector Server is Running!');
 });
 
-app.listen(port, () => {
-  console.log(`Server running at http://127.0.0.1:${port}`);
+// Website se data receive karne ka endpoint
+app.post('/webhook', async (req, res) => {
+  const data = req.body;
+  console.log('Website Data Received:', data);
+
+  const formattedMessage = `<b>🌐 New Website Data Received!</b>\n\n` +
+    `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+
+  // Dono bots se message bhejein
+  await sendTelegramMessage(BOT1_TOKEN, `[Bot Dkdook] \n${formattedMessage}`);
+  await sendTelegramMessage(BOT2_TOKEN, `[Bot Mamaaam] \n${formattedMessage}`);
+
+  res.status(200).json({ status: 'success', message: 'Data sent to bots!' });
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
