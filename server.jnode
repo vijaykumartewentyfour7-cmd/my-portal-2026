@@ -1,0 +1,52 @@
+const express = require('express');
+const path = require('path');
+const fetch = require('node-fetch');
+const app = express();
+const PORT = 3000;
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Aapki Telegram Details
+const TELEGRAM_BOT_TOKEN = 'REMOVED_TOKEN'; 
+const TELEGRAM_CHAT_ID = '@Yedun9999'; 
+
+// Serve frontend file
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Handle form submission and send to Telegram
+app.post('/submit', async (req, res) => {
+    const { username, email } = req.body;
+    
+    const message = `New Data Received:\nUsername: ${username}\nEmail: ${email}`;
+    const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+
+    try {
+        const telegramResponse = await fetch(telegramUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message
+            })
+        });
+
+        const telegramData = await telegramResponse.json();
+
+        if (telegramData.ok) {
+            res.json({ success: true });
+        } else {
+            console.error('Telegram API Error:', telegramData);
+            res.json({ success: false });
+        }
+    } catch (error) {
+        console.error('Error sending to Telegram:', error);
+        res.json({ success: false });
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
