@@ -3,7 +3,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'POST only' });
   }
 
-  const token = process.env.TELEGRAM_TOKEN;
+  const token = process.env.BOT1_TOKEN;
   const chatId = process.env.CHAT_ID;
 
   if (!token || !chatId) {
