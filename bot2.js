@@ -1,4 +1,4 @@
-const TOKEN = 'REMOVED_TOKEN';
+const TOKEN = process.env.BOT2_TOKEN;
 const BASE_URL = `https://api.telegram.org/bot${TOKEN}`;
 
 async function sendMessage(chatId, text) {

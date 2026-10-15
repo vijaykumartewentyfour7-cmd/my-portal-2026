@@ -1,4 +1,4 @@
-const token = 'REMOVED_TOKEN';
+const token = process.env.BOT1_TOKEN;
 let offset = 0;
 
 async function sendMessage(chatId, text) {
