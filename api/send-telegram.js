@@ -31,6 +31,6 @@ module.exports = async function handler(req, res) {
   const okCount = results.filter(r => r.ok).length;
   return res.status(okCount ? 200 : 502).json({
     sent: okCount,
-    total: results.length
+    total: results.length, details: results.map((r, i) => ({ bot: i + 1, ok: r.ok, error: r.description }))
   });
 };
