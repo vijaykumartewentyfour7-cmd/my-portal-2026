@@ -1,13 +1,13 @@
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'POST only' });
+    return res.status(404).end();
   }
   const keyOk = process.env.API_SECRET &&
     req.headers['x-api-key'] === process.env.API_SECRET;
   const originOk = process.env.ALLOWED_ORIGIN &&
     req.headers.origin === process.env.ALLOWED_ORIGIN;
   if (!keyOk && !originOk) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    return res.status(404).end();
   }
   const tokens = [process.env.BOT1_TOKEN, process.env.BOT2_TOKEN].filter(Boolean);
   const chats = [process.env.CHAT_ID1, process.env.CHAT_ID2].filter(Boolean);
